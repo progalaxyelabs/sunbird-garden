@@ -181,12 +181,36 @@ sunbird-garden/
 docker compose -f docker-compose.yaml up -d
 ```
 
-## Maintenance
+## Post-Merge Setup (One-Time)
 
-### Remove backup directories after confirming merge success
+After the v2 merge, complete these steps:
+
+### 1. Add Bitbucket Remote and Push
+
+```bash
+git remote add origin git@bitbucket.org:progalaxyelabs/sunbird-garden.git
+git push -u origin main
+```
+
+### 2. Archive ghbot-fullstack on GitHub
+
+The ghbot-fullstack repository on GitHub is now superseded by this repo.
+Either archive it or add a deprecation notice to its README.
+
+### 3. Remove Backup Directories
+
+After confirming everything works:
 
 ```bash
 rm -rf sunbird-api.backup sunbird-frontend.backup
+```
+
+### 4. Update work-management Database
+
+Run project scan to update sunbird-garden metadata:
+```bash
+# In work-management directory
+mcp__work-management__scan_projects()
 ```
 
 ## License
