@@ -1,0 +1,79 @@
+<div class="container">
+    <div class="content form-editor">
+        <h3>Form Editor</h3>
+        <form class="p-3" [formGroup]="form">
+            <div class="row g-3 align-items-center mb-3 header">
+                <div class="col-auto">
+                    <label class="col-form-label">Form Name</label>
+                </div>
+                <div class="col-auto">
+                    <input type="text"class="form-control" formControlName="formName" autofocus />
+                </div>
+            </div>
+            <table class="table table-bordered my-form-fields" #table>
+                <thead class="table-row1 table-head1">
+                    <tr>                
+                        <td class="table-cell1">Label</td>
+                        <td class="table-cell1">Type</td>
+                        <td class="table-cell1">Required</td>
+                        <td class="table-cell1">Actions</td>
+                    </tr>
+                </thead>
+                <tbody formArrayName="fields">
+                    <ng-container *ngFor="let field of formFields.controls; let i=index">
+                        <tr class="table-row1" [formGroup]="field">
+                            <td class="table-cell1">
+                                <input type="text" formControlName="label" />
+                            </td>
+                            <td class="table-cell1">
+                                <select formControlName="type">
+                                    <option value="text">Text</option>
+                                    <option value="multilinetext">Multi-line Text</option>
+                                    <option value="email">Email</option>
+                                    <option value="number">Number</option>
+                                    <option value="secret">Secret</option>
+                                    <option value="checkbox">Checkbox</option>
+                                    <option value="radiogroup">Radio Group</option>
+                                    <option value="dropdown">Dropdown</option>
+                                    <option value="multiselect">Multiselect</option>
+                                    <option value="date">Date</option>
+                                </select>
+                            </td>
+                            <td class="table-cell1 cell-centered">
+                                <input type="checkbox" formControlName="isRequired" />
+                            </td>
+                            <td class="table-cell1 row-actions" (click)="onClick($event, i)">
+                                <button class="btn btn-outline-secondary" type="button" data-action="addbelow" style="transform: rotate(180deg)">
+                                    &dagger;
+                                </button>
+                                <button class="btn btn-outline-secondary" type="button" data-action="addabove">
+                                    &dagger;
+                                </button>
+                                <button class="btn btn-outline-secondary" type="button" data-action="moveup">
+                                    &and;
+                                </button>
+                                <button class="btn btn-outline-secondary" type="button" data-action="movedown">
+                                    &or;
+                                </button>
+                                <button class="btn btn-outline-secondary" type="button" data-action="remove">
+                                    &times;
+                                </button>
+                            </td>
+                        </tr>
+                    </ng-container>
+                    
+                </tbody>
+            </table>
+            <div class="form-action">
+                <button class="btn btn-primary" type="button" role="submit" (click)="submitReactiveForm($event)" [disabled]="!form.valid">Save</button>
+            </div>
+        </form>
+    </div>
+       
+    
+    <div class="content form-preview">
+        <h3>Form Preview</h3>
+        <app-dynamic-form [dynamicForm]="previewForm"></app-dynamic-form>
+    </div>
+    
+</div> 

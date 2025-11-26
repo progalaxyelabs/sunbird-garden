@@ -1,0 +1,108 @@
+services:
+  db:
+    image: postgres:16
+    container_name: sunbird-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./api/database/migrations:/docker-entrypoint-initdb.d
+    networks:
+      - sunbird-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: sunbird-api
+    restart: unless-stopped
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      API_URL: ${API_URL}
+      APP_ENV: ${APP_ENV:-production}
+    ports:
+      - "127.0.0.1:${API_PORT:-4402}:80"
+    volumes:
+      - ./api:/var/www/html
+      - api_logs:/var/www/html/logs
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - sunbird-network
+    healthcheck:
+      test: ["CMD", "php", "-v"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  alert:
+    build:
+      context: ./alert
+      dockerfile: Dockerfile
+    container_name: sunbird-alert
+    restart: unless-stopped
+    environment:
+      ALERT_PORT: 3001
+      WWW_URL: ${WWW_URL}
+      NODE_ENV: ${APP_ENV:-production}
+    ports:
+      - "127.0.0.1:${ALERT_PORT:-4401}:3001"
+    volumes:
+      - ./alert:/app
+      - /app/node_modules
+    networks:
+      - sunbird-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  www:
+    build:
+      context: ./www
+      dockerfile: Dockerfile
+    container_name: sunbird-www
+    restart: unless-stopped
+    environment:
+      API_URL: ${API_URL}
+      ALERT_URL: ${ALERT_URL}
+    ports:
+      - "127.0.0.1:${WWW_PORT:-4400}:4200"
+    volumes:
+      - ./www:/app
+      - /app/node_modules
+      - /app/api-client
+    depends_on:
+      - api
+      - alert
+    networks:
+      - sunbird-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:4200"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  sunbird-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  api_logs:
+    driver: local

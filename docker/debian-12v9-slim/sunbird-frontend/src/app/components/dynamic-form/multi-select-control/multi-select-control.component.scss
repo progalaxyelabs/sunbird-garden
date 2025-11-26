@@ -1,0 +1,73 @@
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 2rem 1.5rem 3rem 1.5rem;
+
+    .dialog {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+        border-radius: 0.5rem;
+
+        .dialog-header {
+            padding: 0.75rem 1rem;
+            box-shadow: 1px 0 5px rgba(0, 0, 0, 0.5);
+
+            h1,
+            h2,
+            h3,
+            h4,
+            h5,
+            h6 {
+                font-size: 1.25rem;
+                font-weight: bold;
+                margin: 0 0 0.25rem 0;
+            }
+
+            p {
+                margin: 0;
+            }
+
+            .dialog-close {
+                float: right;
+                line-height: 1;
+                font-size: 1.5rem;
+                border: 1px solid transparent;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 2rem;
+                height: 2rem;
+                background-color: #eee;                
+            }
+        }
+
+        .dialog-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 1rem;
+
+            .checkbox {
+                padding: 0.5rem 0;
+                &:hover {
+                    background-color: #eee;
+                }
+            }
+        }
+
+        .dialog-footer {
+            justify-content: center;
+            padding: 0.75rem 1rem;
+            box-shadow: 1px 0 5px rgba(0, 0, 0, 0.5);
+        }
+    }
+}

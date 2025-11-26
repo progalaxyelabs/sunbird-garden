@@ -1,0 +1,33 @@
+.content {
+    padding: 0 1rem;
+}
+.main-grid {
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    display: grid;
+    grid-template-columns: 20rem 1fr;
+}
+
+.forms-list-wrap {
+    border-right: 1px solid #ccc;
+    padding: 0 1rem;
+}
+
+.form-preview-wrap {
+    padding: 1rem;
+}
+
+ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+li {
+    padding: 0.5rem 0;
+}
+
+a {
+    text-decoration: none;
+}
+

@@ -1,0 +1,18 @@
+<h1>Forms</h1>
+<div class="content">
+    <div class="main-grid">
+        <div class="forms-list-wrap">
+            <ul>
+                <li *ngIf="names.length === 0">No forms</li>
+                <li *ngFor="let name of names; index as i">
+                    <a [routerLink]="'/forms/form/' + name.key" 
+                        routerLinkActive="active">{{ name.name }}</a>
+                </li>
+                <li><a routerLink="/form-editor">+ Create Form</a></li>
+            </ul>
+        </div>
+        <div class="form-preview-wrap">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</div>

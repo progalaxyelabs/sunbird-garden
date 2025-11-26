@@ -1,0 +1,24 @@
+<div *ngIf="entry.source">
+    <div class="form-input-readonly" (click)="onInputClick($event)">Selected {{numSelected}} of {{totalOptions}}</div>
+    <div class="popup options" *ngIf="isDialogOpen">
+        <div class="backdrop"></div>
+        <div class="dialog">
+            <div class="dialog-header">
+                <button class="dialog-close" (click)="onDialogCancelClick($event)">&times;</button>
+                <h5>{{label}}</h5>
+                <p>Selected {{numSelected}} of {{totalOptions}}</p>
+            </div>
+            <div class="dialog-body" #checkboxes>
+                <div *ngFor="let row of entry.source.table" class="checkbox">
+                    <input [id]="idPrefix + row[entry.source.valueColumn]" type="checkbox" [checked]="isSelected(row)"
+                        (change)="onCheckboxChange($event, row)" />
+                    <label [for]="idPrefix + row[entry.source.valueColumn]">{{row[entry.source.labelColumn]}}</label>
+                </div>
+            </div>
+            <div class="dialog-footer buttons">
+                <button type="button" (click)="onDialogOkClick($event)" class="primary">Ok</button>
+                <button type="button" (click)="onDialogCancelClick($event)">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

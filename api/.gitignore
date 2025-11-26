@@ -1,0 +1,16 @@
+.env
+
+/vendor/
+
+*.pem
+*.pub
+/uploads
+logs/*
+!logs/index.php
+
+# Supervisor runtime file
+supervisord.pid
+
+# PHPUnit
+.phpunit.cache
+/coverage/

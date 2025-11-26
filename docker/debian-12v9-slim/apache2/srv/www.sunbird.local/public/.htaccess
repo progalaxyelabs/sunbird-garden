@@ -1,0 +1,14 @@
+RewriteEngine On
+RewriteBase /
+
+RewriteCond %{HTTP_ACCEPT} text/html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^apps\/(.*) apps/$1/index.html [last]
+
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^apps\/(.*) apps/$1 [last]
+
+
+RewriteCond %{REQUEST_FILENAME}  -f [OR]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ index.php [L,QSA]

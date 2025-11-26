@@ -1,0 +1,92 @@
+.header {
+    width: 50rem;
+    max-width: 100%;
+}
+
+.table {
+    width: 100%;
+    overflow-x: auto;
+}
+.table-row {
+    display: grid;
+    grid-template-columns: 10rem 10rem 10rem 5rem 10rem;
+
+    &.table-head {
+        text-align: center;
+        font-weight: bold;
+    }
+}
+
+.table-cell {
+    border-left: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+}
+
+.table-cell:last-child {
+    border-right: 1px solid #ccc;
+}
+
+.table-row:last-child {
+    .table-cell {
+        border-bottom: 1px solid #ccc;
+    }
+}
+
+.my-form-fields {
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    select {
+        display: block;
+        width: 100%;
+        border: none;
+        box-shadow: none;
+        background-color: #efefef;
+        padding: 0.5rem;
+    }
+
+    input[type="checkbox"] {
+        scale: 1.8;
+    }
+}
+
+.row-actions {
+    text-align: center;
+    button {
+        margin-right: 1rem;
+        border-radius: 50%;
+        line-height: 1;
+        display: inline-block;
+        width: 2rem;
+        height: 2rem;
+        font-size: 2rem;
+        text-align: center;
+        padding: 0;
+        font-family: "Courier New", Courier, monospace;
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}
+
+.cell-centered {
+    text-align: center;
+    align-content: center;
+}
+
+thead td {
+    text-align: center;
+}
+
+tbody td {
+    vertical-align: middle;
+}
+
+
+.container .content {
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    margin: 1rem 0;
+}

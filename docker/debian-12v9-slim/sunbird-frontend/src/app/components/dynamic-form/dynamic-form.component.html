@@ -1,0 +1,63 @@
+<form class="dynamic-form" [formGroup]="formGroup">
+    <h5>{{dynamicForm.formName}}</h5>
+    <div class="controls-wrap">
+        @for (field of dynamicForm.fields; track $index) {
+            @if(field.hidden) {
+                <input type="hidden" [name]="field.name" [formControlName]="field.name" value="{{field.value}}" />    
+            } 
+            @else {
+                <div class="mb-3">
+                    @switch (field.type) {
+                        @case ('text') {
+                            <label [for]="field.id">{{field.label}}</label>
+                            <input [id]="field.id" type="text" [name]="field.name" [formControlName]="field.name" class="form-control" />
+                        }
+                        @case ('email') {
+                            <label [for]="field.id">{{field.label}}</label>
+                            <input [id]="field.id" type="email" [name]="field.name" [formControlName]="field.name" class="form-control"/>
+                        }
+                        @case ('number') {
+                            <label [for]="field.id">{{field.label}}</label>
+                            <input [id]="field.id" type="number" [name]="field.name" [formControlName]="field.name" class="form-control" />
+                        }
+                        @case ('secret') {
+                            <label [for]="field.id">{{field.label}}</label>
+                            <input [id]="field.id" type="password" [name]="field.name" [formControlName]="field.name" class="form-control" />
+                        }
+                        @case ('date') {
+                            <label [for]="field.id">{{field.label}}</label>
+                            <input [id]="field.id" type="date" [name]="field.name" [formControlName]="field.name" class="form-control" />
+                        }
+                        @case ('checkbox') {
+                            <input [id]="field.id" type="checkbox" [name]="field.name" [formControlName]="field.name" class="form-control" />
+                            <label [for]="field.id">{{field.label}}</label>
+                        }
+                        @case ('dropdown') {
+                            <label [for]="field.id">{{field.label}}</label>
+                            <select [name]="field.name" [formControlName]="field.name" class="form-control">
+                                <option value="" disabled></option>
+                                <ng-container *ngIf="field.source" >
+                                    <option *ngFor="let row of field.source.table" 
+                                    [value]="row[field.source.valueColumn]">{{row[field.source.labelColumn]}}</option>
+                                </ng-container>
+                            </select>
+                        }
+                        @case ('multiselect') {
+                            <label [for]="field.id">{{field.label}}</label>
+                            <app-multi-select-control [entry]="field" [label]="field.label"></app-multi-select-control>
+                        }
+                        @case ('multilinetext') {
+                            <label [for]="field.id">{{field.label}}</label>
+                            <textarea [formControlName]="field.name" class="form-control"></textarea>
+                        }
+                    }
+                </div>
+            }
+        }        
+    </div>
+
+    <div class="buttons">
+        <button *ngFor="let button of dynamicForm.buttons" (click)="onClick($event, button.title)"
+            type="button" class="btn btn-light me-2">{{button.title}}</button>
+    </div>
+</form>
