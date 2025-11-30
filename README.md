@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Sunbird Garden - ProGalaxy eLabs Foundation Reference Platform
 
 The canonical Docker-based platform template and reference implementation for all ProGalaxy eLabs projects. This foundation project demonstrates StoneScriptPHP in action and serves as the base template for new projects.
@@ -263,3 +264,7 @@ Proprietary - ProGalaxy eLabs
 ## Support
 
 Internal tool - contact the development team for support.
+=======
+# sunbird-garden
+This is the reference platform project with the Angular frontend, StoneScriptPHP API, and alert service - the template that other projects like webmeteor-platform will use as their base.
+>>>>>>> 73ec5835f734b09a296e9a3116522e38669eb301
