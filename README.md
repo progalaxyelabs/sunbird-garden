@@ -1,6 +1,9 @@
-# Sunbird v2 - ProGalaxy eLabs Platform Template
+# Sunbird Garden - ProGalaxy eLabs Foundation Reference Platform
 
-The canonical Docker-based platform template for all ProGalaxy eLabs projects.
+The canonical Docker-based platform template and reference implementation for all ProGalaxy eLabs projects. This foundation project demonstrates StoneScriptPHP in action and serves as the base template for new projects.
+
+**Location**: `/ssd2/projects/progalaxy-elabs/foundation/sunbird-garden/`
+**Published**: `progalaxyelabs/sunbird-garden` (GitHub & Docker Hub)
 
 ## Architecture
 
