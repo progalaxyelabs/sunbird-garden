@@ -2,8 +2,11 @@
 
 The canonical Docker-based platform template and reference implementation for all ProGalaxy eLabs projects. This foundation project demonstrates StoneScriptPHP in action and serves as the base template for new projects.
 
+**Note:** While this package is published under `@progalaxyelabs`, the official StoneScriptPHP website and documentation are at https://stonescriptphp.org. A future migration to the `@stonescriptphp` namespace is planned.
+
 **Location**: `/ssd2/projects/progalaxy-elabs/foundation/sunbird-garden/`
 **Published**: `progalaxyelabs/sunbird-garden` (GitHub & Docker Hub)
+**Website**: https://stonescriptphp.org
 
 ## Architecture
 
@@ -71,6 +74,43 @@ docker compose up
 # API: http://localhost:4402
 # Alert: http://localhost:4401
 ```
+
+## Package Updates
+
+Sunbird Garden includes a convenient update script for managing dependencies:
+
+```bash
+# Update StoneScriptPHP framework
+./update.sh --stonescript
+
+# Update Angular client library
+./update.sh --ngx-client
+
+# Update all packages (composer + npm)
+./update.sh --all
+
+# Check what's outdated without updating
+./update.sh --check
+
+# Update all and rebuild Docker containers
+./update.sh --all --rebuild
+
+# Show all available options
+./update.sh --help
+```
+
+**Manual updates:**
+```bash
+# Update PHP packages (currently using progalaxyelabs namespace)
+cd api && composer update progalaxyelabs/stonescriptphp
+
+# Update npm packages (transitioning to @stonescriptphp/ngx-client)
+cd www && npm update @stonescriptphp/ngx-client
+```
+
+For detailed update strategies and usage patterns, see **[USAGE.md](./USAGE.md)**.
+
+**Learn more:** https://stonescriptphp.org/docs
 
 ## Development Workflow
 

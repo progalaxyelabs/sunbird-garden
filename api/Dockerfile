@@ -55,4 +55,8 @@ COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 EXPOSE 80
 
+LABEL maintainer="ProGalaxy eLabs <team@progalaxyelabs.com>"
+LABEL org.opencontainers.image.source="https://github.com/progalaxyelabs/sunbird-garden"
+LABEL org.opencontainers.image.description="Sunbird Garden API service - StoneScriptPHP backend"
+
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

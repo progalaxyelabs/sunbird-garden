@@ -32,5 +32,9 @@ RUN chmod +x /app/docker-entrypoint.sh
 
 EXPOSE 4200
 
+LABEL maintainer="ProGalaxy eLabs <team@progalaxyelabs.com>"
+LABEL org.opencontainers.image.source="https://github.com/progalaxyelabs/sunbird-garden"
+LABEL org.opencontainers.image.description="Sunbird Garden Web UI - Angular frontend"
+
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
 CMD ["npm", "start"]

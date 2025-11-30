@@ -25,7 +25,7 @@ status: "maintenance"
 title: "Sunbird-garden"
 
 # Brief project description
-description: "Project sunbird-garden - internal-tool"
+description: "Reference implementation platform showcasing StoneScriptPHP framework with Angular, Rust API, and Node.js services"
 
 # Project version (semantic versioning recommended)
 version: "1.0.0"
@@ -41,16 +41,16 @@ last_modified: "2025-11-26"
 # =======================
 
 # Domain category
-domain: "other"
+domain: "tools"
 
 # Project purpose: product | client-project | internal-tool | poc | experiment | library | marketing | unknown
-purpose: "internal-tool"
+purpose: "library"
 
 # Business model: b2b-saas | b2c-saas | b2b-one-off | b2c-one-off | marketplace | internal | unknown
 business_model: "internal"
 
 # Ownership: progalaxy | client | partner | open-source | unknown
-ownership: "unknown"
+ownership: "progalaxy"
 
 # Revenue priority: p0-critical | p1-high | p2-medium | p3-low | p4-none | unknown
 revenue_priority: "p4-none"
@@ -62,8 +62,8 @@ revenue_priority: "p4-none"
 # Primary technology stack
 tech_stack:
   frontend: "Angular"
-  backend: "Rust"
-  database: "None"
+  backend: "PHP"
+  database: "PostgreSQL"
   runtime: "Docker"
 
 # Deployment tier: tier-0-static | tier-1-simple | tier-2-database | tier-3-services | tier-4-distributed | library | unknown
@@ -81,11 +81,11 @@ modules:
     tech_stack:
       - Angular
   - name: "api"
-    description: "api module"
+    description: "StoneScriptPHP backend API"
     path: "./api"
     tech_stack:
-      - Rust
-      - Axum
+      - PHP
+      - StoneScriptPHP
   - name: "alert"
     description: "alert module"
     path: "./alert"
