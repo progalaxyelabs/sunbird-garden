@@ -1,27 +1,28 @@
 # Sunbird Garden - High Level Design Document
 
-**Version:** 1.0
-**Date:** 2025-11-26
-**Status:** Draft
+**Version:** 1.1
+**Date:** 2026-01-13
+**Status:** Active
 **Project Type:** Platform (Multi-Service)
 
 ---
 
 ## 1. Overview
 
-Sunbird Garden is a dynamic forms builder platform that enables users to create, edit, preview, and manage custom forms with multiple field types. The platform provides a flexible, code-free approach to building data collection forms with support for validation, multi-select options, and various input types.
+Sunbird Garden is a complete full-stack platform reference implementation that demonstrates how to build production-ready applications using the StoneScriptPHP framework. It showcases best practices for modern full-stack development with a microservices architecture.
 
 ### Purpose
-- Enable non-technical users to build and deploy custom forms
-- Support multiple field types (text, number, email, date, checkbox, dropdown, multiselect)
-- Provide real-time form preview and editing capabilities
-- Store form configurations and submissions for later retrieval
+- Serve as a reference implementation for the StoneScriptPHP framework
+- Demonstrate production-ready full-stack architecture patterns
+- Provide a scaffolding tool for new StoneScriptPHP projects
+- Showcase integration between Angular, StoneScriptPHP (PHP), and PostgreSQL
+- Illustrate real-time notification implementation via WebSocket
 
 ### Target Users
-- Business analysts and product managers
-- Customer support teams
-- Marketing teams collecting lead information
-- Internal teams requiring custom data collection forms
+- Developers learning StoneScriptPHP framework
+- Teams starting new full-stack projects with StoneScriptPHP
+- Developers looking for microservices architecture examples
+- Contributors to the StoneScriptPHP ecosystem
 
 ---
 
@@ -29,76 +30,61 @@ Sunbird Garden is a dynamic forms builder platform that enables users to create,
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         CLIENT LAYER                             │
-│  ┌────────────────────────────────────────────────────────────┐ │
-│  │           Angular 18 SPA (sunbird-frontend)                │ │
-│  │  ┌──────────┐  ┌──────────┐  ┌──────────────────────────┐ │ │
-│  │  │  Form    │  │  Form    │  │  Form Preview &          │ │ │
-│  │  │  Editor  │  │  Manager │  │  Submission              │ │ │
-│  │  └──────────┘  └──────────┘  └──────────────────────────┘ │ │
-│  │       │              │                    │                 │ │
-│  │       └──────────────┴────────────────────┘                 │ │
-│  │                      │                                       │ │
-│  │              ┌───────▼────────┐                             │ │
-│  │              │  Forms Service │                             │ │
-│  │              │  (In-Memory)   │                             │ │
-│  │              └───────┬────────┘                             │ │
-│  └──────────────────────┼──────────────────────────────────────┘ │
-└─────────────────────────┼────────────────────────────────────────┘
+│                   HOST MACHINE (127.0.0.1)                       │
+│              http://localhost:4400 (www)                         │
+│              http://localhost:4402 (api)                         │
+│              http://localhost:4401 (alert)                       │
+└─────────────────────────┬───────────────────────────────────────┘
                           │
-                   HTTP/REST API
-                          │
-┌─────────────────────────▼────────────────────────────────────────┐
-│                      API LAYER                                   │
-│  ┌────────────────────────────────────────────────────────────┐ │
-│  │         Custom PHP Backend (sunbird-api)                   │ │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌────────────────┐  │ │
-│  │  │   Router     │─▶│   Routes     │─▶│  ApiResponse   │  │ │
-│  │  │  (Minimalist │  │  (Handlers)  │  │   Models       │  │ │
-│  │  │     MVC)     │  └──────┬───────┘  └────────────────┘  │ │
-│  │  └──────────────┘         │                               │ │
-│  │                   ┌────────▼────────┐                      │ │
-│  │                   │ Database Layer  │                      │ │
-│  │                   │   (Functions)   │                      │ │
-│  │                   └────────┬────────┘                      │ │
-│  └────────────────────────────┼───────────────────────────────┘ │
-└─────────────────────────────┼─────────────────────────────────────┘
-                              │
-                    PostgreSQL Protocol
-                              │
-┌─────────────────────────────▼────────────────────────────────────┐
-│                      DATA LAYER                                  │
-│  ┌────────────────────────────────────────────────────────────┐ │
-│  │                  PostgreSQL Database                        │ │
-│  │  ┌──────────┐  ┌───────────────┐  ┌───────────────────┐  │ │
-│  │  │  Tables  │  │   Stored      │  │   User Auth &     │  │ │
-│  │  │  (Forms, │  │   Procedures  │  │   Permissions     │  │ │
-│  │  │   Users) │  │   (Business   │  │                   │  │ │
-│  │  │          │  │    Logic)     │  │                   │  │ │
-│  │  └──────────┘  └───────────────┘  └───────────────────┘  │ │
-│  └────────────────────────────────────────────────────────────┘ │
-└──────────────────────────────────────────────────────────────────┘
-
+                          ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│                    EXTERNAL SERVICES                             │
-│  ┌─────────────┐  ┌──────────────┐  ┌────────────────────────┐ │
-│  │   JWT Auth  │  │   ZeptoMail  │  │   Excel Export         │ │
-│  │  (firebase/ │  │   (Email     │  │   (PHPSpreadsheet)     │ │
-│  │   php-jwt)  │  │   Service)   │  │                        │ │
-│  └─────────────┘  └──────────────┘  └────────────────────────┘ │
+│              DOCKER NETWORK (172.20.0.0/16)                      │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │  WWW SERVICE (Angular)                Port 4400 → :80    │  │
+│  │  - Angular 18 SPA                                         │  │
+│  │  - StoneScript UI                                         │  │
+│  │  - Auto-generated TypeScript API clients                 │  │
+│  │  - WebSocket connection to Alert service                 │  │
+│  └──────────────────────┬───────────────────────────────────┘  │
+│                         │                                        │
+│                         ↓ HTTP/REST                              │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │  API SERVICE (StoneScriptPHP)     Port 4402 → :80        │  │
+│  │  - PHP 8.3 with StoneScriptPHP framework                 │  │
+│  │  - RESTful API endpoints                                 │  │
+│  │  - JWT authentication                                     │  │
+│  │  - Database function abstraction                         │  │
+│  └──────────────────────┬───────────────────────────────────┘  │
+│                         │                                        │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │  ALERT SERVICE (Node.js)      Port 4401 → :3001          │  │
+│  │  - Express + Socket.IO                                    │  │
+│  │  - Real-time notifications                                │  │
+│  │  - WebSocket pub/sub                                      │  │
+│  └──────────────────────┬───────────────────────────────────┘  │
+│                         │                                        │
+│                         ↓ PostgreSQL Protocol                    │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │  DATABASE SERVICE (PostgreSQL 16)   Port :5432 (internal)│  │
+│  │  - PostgreSQL 16 Alpine                                   │  │
+│  │  - Stored procedures for business logic                  │  │
+│  │  - Persistent volume: postgres_data                      │  │
+│  │  - Initialization scripts support                        │  │
+│  └──────────────────────────────────────────────────────────┘  │
+│                                                                  │
 └─────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
-│                    DEPLOYMENT LAYER                              │
-│  ┌────────────────────────────────────────────────────────────┐ │
-│  │               Docker Container (Debian 12)                  │ │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐  │ │
-│  │  │   Apache2    │  │    PHP 8.x   │  │   Node.js 20    │  │ │
-│  │  │   (Web       │  │   (Backend)  │  │   (Build Tools) │  │ │
-│  │  │   Server)    │  │              │  │   Angular CLI   │  │ │
-│  │  └──────────────┘  └──────────────┘  └─────────────────┘  │ │
-│  └────────────────────────────────────────────────────────────┘ │
-└──────────────────────────────────────────────────────────────────┘
+│                    DOCKER VOLUMES                                │
+├─────────────────────────────────────────────────────────────────┤
+│  • postgres_data        → Database persistence                  │
+│  • api_logs             → API logs                              │
+│  • www_node_modules     → Frontend dependencies cache           │
+│  • www_dist             → Frontend build artifacts              │
+│  • alert_node_modules   → Alert service dependencies cache      │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -141,20 +127,24 @@ Sunbird Garden is a dynamic forms builder platform that enables users to create,
 
 ## 4. Services Table
 
-| Service Name | Type | Port | Technology | Purpose | Status |
+| Service Name | Type | Port (Host→Container) | Technology | Purpose | Status |
 |-------------|------|------|------------|---------|--------|
-| **sunbird-frontend** | Frontend SPA | 4200 (dev) | Angular 18 + TypeScript | Dynamic forms builder UI with form editor, preview, and management capabilities | WIP |
-| **sunbird-api** | Backend API | 80/443 | Custom PHP + PostgreSQL | REST API providing form CRUD operations, user authentication, and data persistence via stored procedures | WIP |
+| **www** | Frontend SPA | 4400→80 | Angular 18 + TypeScript + StoneScript UI | Web application demonstrating StoneScriptPHP client integration | Active |
+| **api** | Backend API | 4402→80 | PHP 8.3 + StoneScriptPHP | RESTful API with auto-generated TypeScript clients, JWT auth, PostgreSQL integration | Active |
+| **alert** | Notification Service | 4401→3001 | Node.js 20 + Express + Socket.IO | Real-time WebSocket notifications and alerts | Active |
+| **db** | Database | Internal :5432 | PostgreSQL 16 Alpine | Data persistence with stored procedures, no external ports | Active |
 
 ### Service Dependencies
 
 ```
-sunbird-frontend
-    └─► sunbird-api (REST API calls)
-            └─► PostgreSQL Database
-            └─► JWT Authentication (firebase/php-jwt)
-            └─► ZeptoMail (Email notifications)
-            └─► PHPSpreadsheet (Excel exports)
+www (Angular)
+    ├─► api (HTTP/REST)
+    │   └─► db (PostgreSQL)
+    │       └─► JWT Authentication (firebase/php-jwt)
+    │       └─► Email (Optional: ZeptoMail)
+    │       └─► Excel Export (Optional: PHPSpreadsheet)
+    └─► alert (WebSocket)
+        └─► db (PostgreSQL - optional)
 ```
 
 ---
@@ -163,10 +153,12 @@ sunbird-frontend
 
 ### Database Schema (PostgreSQL)
 
-#### Core Tables
+The database schema is defined through migration scripts located in `docker/postgres/init/`. As a reference implementation, the actual schema will vary based on the specific application being built.
+
+#### Example Core Tables
 
 ```sql
--- Users Table
+-- Users Table (Example)
 users (
     user_id: SERIAL PRIMARY KEY,
     name: TEXT NOT NULL,
@@ -177,72 +169,29 @@ users (
     last_updated_on: TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 )
 
--- Forms Table (expected structure)
-forms (
-    form_id: SERIAL PRIMARY KEY,
-    form_name: TEXT NOT NULL,
-    form_config: JSONB NOT NULL,  -- Stores DynamicForm structure
-    created_by: INTEGER REFERENCES users(user_id),
-    created_on: TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_on: TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    is_active: BOOLEAN DEFAULT TRUE
-)
-
--- Form Submissions Table (expected structure)
-form_submissions (
-    submission_id: SERIAL PRIMARY KEY,
-    form_id: INTEGER REFERENCES forms(form_id),
-    submitted_by: INTEGER REFERENCES users(user_id) NULL,
-    submission_data: JSONB NOT NULL,
-    submitted_on: TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+-- Sessions Table (Example)
+sessions (
+    session_id: SERIAL PRIMARY KEY,
+    user_id: INTEGER REFERENCES users(user_id),
+    token: TEXT NOT NULL,
+    created_at: TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    expires_at: TIMESTAMPTZ NOT NULL,
     ip_address: TEXT,
     user_agent: TEXT
 )
 ```
 
-### Frontend Data Models
+### StoneScriptPHP Pattern
 
-#### DynamicFormField Interface
-```typescript
-interface DynamicFormField {
-    id?: string
-    name: string
-    label?: string
-    type: DynamicFormFieldType  // Enum: number, text, email, secret,
-                                //       multilinetext, checkbox, hidden,
-                                //       dropdown, multiselect, date
-    hidden?: boolean
-    value?: string | number | boolean | DynamicFormMultiSelectValue[]
-    source?: DynamicFormMultiSelectSource  // For dropdown/multiselect
-    required?: boolean
-}
-```
-
-#### DynamicForm Type
-```typescript
-type DynamicForm = {
-    formName: string
-    fields: DynamicFormField[]
-    buttons: DynamicFormButton[]
-}
-```
-
-#### Field Types Supported
-
-| Type | Control | Description | Example Use Case |
-|------|---------|-------------|------------------|
-| `text` | Text input | Single-line text entry | Name, Title |
-| `number` | Number input | Numeric values | Age, Quantity |
-| `email` | Email input | Email validation | Contact Email |
-| `secret` | Password input | Hidden text | Password fields |
-| `multilinetext` | Textarea | Multi-line text | Comments, Description |
-| `checkbox` | Checkbox | Boolean yes/no | Accept Terms |
-| `hidden` | Hidden field | Invisible data | Tracking IDs |
-| `dropdown` | Select | Single selection from list | Country, Status |
-| `multiselect` | Multi-select | Multiple selections | Skills, Tags |
-| `date` | Date picker | Date selection | Birth Date, Event Date |
+The platform follows the StoneScriptPHP database-first pattern:
+- Business logic resides in PostgreSQL stored procedures
+- PHP functions are auto-generated from SQL functions
+- Type-safe database calls through generated models
+- TypeScript client interfaces auto-generated for frontend
 
 ### API Response Model
+
+The StoneScriptPHP framework uses a standardized API response format:
 
 ```php
 class ApiResponse {
@@ -257,58 +206,63 @@ class ApiResponse {
 
 ## 6. Key Features
 
-### Form Builder Features
-1. **Visual Form Editor**
-   - Drag-and-drop field management
-   - Add/remove fields dynamically
-   - Configure field properties (label, type, required, validation)
-   - Reorder fields
+### Platform Features
+1. **Microservices Architecture**
+   - Independent containerized services (www, api, alert, db)
+   - Docker Compose orchestration
+   - Health checks for all services
+   - Internal Docker network isolation
+   - Volume management for persistence and caching
 
-2. **Field Types Support**
-   - 10+ field types covering common use cases
-   - Custom validation rules per field
-   - Conditional field visibility
-   - Multi-select with custom data sources
+2. **Development Experience**
+   - Hot reload for all services (volume mounts)
+   - Consistent environment across development and production
+   - One-command setup: `docker compose up -d`
+   - Comprehensive documentation (README, USAGE, DOCKER, HLD)
 
-3. **Form Preview**
-   - Real-time form rendering
-   - Test form submission flow
-   - Preview responsive layouts
-   - Validation testing
-
-4. **Form Management**
-   - List all created forms
-   - Edit existing forms
-   - Duplicate forms
-   - Archive/delete forms
-   - Version control (planned)
-
-### Backend Features
-1. **Custom PHP MVC Framework**
-   - Reflection-based request parsing
-   - Automatic route generation
-   - Stored procedure abstraction layer
-
-2. **Database-First Approach**
+### StoneScriptPHP Backend Features
+1. **Database-First Development**
    - Business logic in PostgreSQL stored procedures
    - Auto-generation of PHP models from SQL functions
-   - Type-safe database calls
+   - Auto-generation of TypeScript clients for frontend
+   - Type-safe database calls throughout the stack
 
-3. **Authentication & Authorization**
-   - JWT-based authentication
+2. **RESTful API**
+   - Reflection-based request parsing
+   - Automatic route generation
+   - Standardized API response format
+   - Built-in error handling
+
+3. **Authentication & Security**
+   - JWT-based authentication (firebase/php-jwt)
    - Token generation and validation
-   - User session management
-   - Email verification workflow
+   - CORS configuration
+   - Secure environment variable management
 
-4. **Data Export**
-   - Excel export via PHPSpreadsheet
-   - CSV export support
-   - Custom report generation
+4. **Optional Integrations**
+   - Email service integration (ZeptoMail)
+   - Excel export capability (PHPSpreadsheet)
+   - Extensible for additional services
 
-5. **Email Integration**
-   - Transactional emails via ZeptoMail
-   - Email verification
-   - Form submission notifications
+### Frontend Features
+1. **Modern Angular Application**
+   - Angular 18 with standalone components
+   - TypeScript for type safety
+   - Auto-generated API client from backend
+   - Reactive programming with RxJS
+
+2. **StoneScript UI Integration**
+   - Demonstrates StoneScriptPHP client library usage
+   - Type-safe API calls
+   - Consistent error handling
+   - HTTP interceptors for authentication
+
+### Real-time Notifications
+1. **Alert Service (Node.js + Socket.IO)**
+   - WebSocket-based real-time communication
+   - Pub/sub pattern for notifications
+   - HTTP endpoint for triggering alerts
+   - Health monitoring endpoint
 
 ---
 
@@ -375,99 +329,122 @@ Frontend (Angular)
 
 ### Deployment Architecture
 
-**Environment:** Docker Container (Debian 12.10-slim)
+**Environment:** Docker Compose Multi-Service Setup
 
 ```
-Docker Container
-    ├── Apache2 (Web Server)
-    │   └── Serves: PHP backend + Angular static files
-    ├── PHP 8.x + mod_php
-    │   └── Executes: sunbird-api
-    ├── Node.js 20.17.0 (NVM)
-    │   └── Builds: Angular frontend
-    └── PostgreSQL (External)
-        └── Connection: Via network
+Docker Compose Stack (sunbird)
+    ├── www Service (Angular)
+    │   ├── Base: Node.js 20 Alpine
+    │   ├── Build: Angular production build
+    │   ├── Serve: nginx or dev server
+    │   └── Port: 127.0.0.1:4400 → :80
+    │
+    ├── api Service (StoneScriptPHP)
+    │   ├── Base: PHP 8.3 with Apache
+    │   ├── Extensions: pgsql, curl, mbstring, etc.
+    │   ├── Dependencies: composer install
+    │   └── Port: 127.0.0.1:4402 → :80
+    │
+    ├── alert Service (Node.js)
+    │   ├── Base: Node.js 20 Alpine
+    │   ├── Framework: Express + Socket.IO
+    │   ├── Dependencies: npm install
+    │   └── Port: 127.0.0.1:4401 → :3001
+    │
+    ├── db Service (PostgreSQL)
+    │   ├── Image: postgres:16-alpine
+    │   ├── Initialization: docker/postgres/init/
+    │   ├── Volume: postgres_data
+    │   └── Port: Internal :5432 only
+    │
+    └── Internal Network: 172.20.0.0/16
 ```
 
-### Build Process
+### Quick Start Deployment
 
-#### Frontend Build
+#### 1. Setup Environment
 ```bash
-cd sunbird-frontend
-npm install
-ng build --configuration production
-# Output: dist/ directory with static files
-# Deploy: Copy to Apache document root
+# Clone repository
+git clone https://github.com/progalaxyelabs/sunbird-garden.git
+cd sunbird-garden
+
+# Configure environment
+cp .env.example .env
+# Edit .env and set:
+# - DB_PASSWORD (strong password)
+# - JWT_SECRET (strong secret key)
+# - Other settings as needed
 ```
 
-#### Backend Deployment
+#### 2. Start Services
 ```bash
-cd sunbird-api
-composer install
-# Configure Apache virtual host
-# Set .env for database connection
-# Deploy: Copy to Apache /var/www/
+# Start all services
+docker compose up -d
+
+# Verify all services are healthy
+docker compose ps
+
+# View logs
+docker compose logs -f
 ```
 
-### Container Configuration
-
-**Base Image:** `debian:12.10-slim`
-
-**Installed Components:**
-- Apache2 with mod_php
-- PHP 8.x with extensions: pgsql, curl, mbstring
-- Node.js 20.17.0 (via NVM)
-- Angular CLI 18
-- Git for source control
-
-**User:** `node` (UID: 1000, GID: 1000)
+#### 3. Access Services
+- Frontend: http://localhost:4400
+- API: http://localhost:4402
+- Alert Service: http://localhost:4401
 
 ### Environment Variables
 
+See `.env.example` for all available configuration options:
+
 ```bash
-# Backend (.env)
-DB_HOST=postgresql-host
-DB_PORT=5432
+# Project
+PROJECT_NAME=sunbird
+
+# Database
 DB_NAME=sunbird_db
 DB_USER=sunbird_user
-DB_PASSWORD=*****
-JWT_SECRET=*****
-ZEPTO_API_KEY=*****
+DB_PASSWORD=<secure-password>
 
-# Frontend (environment.ts)
-API_BASE_URL=https://api.sunbird.example.com
+# Service Ports
+API_PORT=4402
+WWW_PORT=4400
+ALERT_PORT=4401
+
+# Security
+JWT_SECRET=<secure-secret>
+
+# CORS
+CORS_ORIGIN=http://localhost:4400
+
+# Application
+APP_ENV=development
 ```
 
-### Deployment Steps
+### Production Deployment
 
-1. **Build Docker Image**
+1. **Update Environment**
    ```bash
-   cd docker/debian-12v9-slim
-   docker build -t sunbird-garden:latest .
+   APP_ENV=production
+   APP_DEBUG=false
+   # Use strong passwords and secrets
    ```
 
-2. **Run Container**
-   ```bash
-   docker run -d \
-     -p 80:80 \
-     -v /path/to/sunbird-api:/var/www/sunbird-api \
-     -v /path/to/sunbird-frontend:/var/www/sunbird-frontend \
-     --name sunbird-garden \
-     sunbird-garden:latest
-   ```
+2. **Add Reverse Proxy**
+   - Use nginx, Traefik, or Caddy
+   - Configure SSL/HTTPS
+   - Set up proper domain routing
 
-3. **Database Setup**
-   ```bash
-   # Run SQL scripts
-   psql -h localhost -U postgres -f sunbird-api/App/Database/postgresql/tables/users.pssql
-   # Run seed data
-   psql -h localhost -U postgres -f sunbird-api/App/Database/postgresql/seeds/*.sql
-   ```
+3. **Security Hardening**
+   - Change default ports
+   - Use strong passwords
+   - Enable firewall rules
+   - Regular security updates
 
-4. **Apache Configuration**
-   - Configure virtual hosts for API and frontend
-   - Enable mod_rewrite for Angular routing
-   - Set CORS headers for API
+4. **Monitoring**
+   - Configure log aggregation
+   - Set up health check monitoring
+   - Enable alerting for service failures
 
 ---
 
@@ -557,134 +534,113 @@ The following components could be extracted as shared libraries:
 
 ### Technical Constraints
 
-1. **Custom Framework Limitations**
-   - No ORM (uses raw stored procedures)
-   - Limited middleware support
-   - Manual route registration required
-   - No automatic API documentation
+1. **StoneScriptPHP Framework**
+   - Database-first approach requires PostgreSQL
+   - Business logic in stored procedures (less portable)
+   - Auto-generated code requires regeneration on schema changes
 
-2. **Frontend State Management**
-   - Forms stored in-memory only (no persistence)
-   - Page refresh loses unsaved forms
-   - No offline support
-   - No undo/redo functionality (yet)
+2. **Docker Dependencies**
+   - Requires Docker and Docker Compose
+   - Services tightly coupled through docker-compose configuration
+   - Local development requires Docker environment
 
 3. **Database Constraints**
-   - Tightly coupled to PostgreSQL
-   - Business logic in stored procedures (portability issue)
-   - No migration framework
-   - Manual schema versioning
+   - Tightly coupled to PostgreSQL 16
+   - Business logic in stored procedures
+   - Migration scripts in docker/postgres/init/ run only on first initialization
 
 4. **Authentication**
-   - JWT tokens only (no OAuth/SAML)
-   - No refresh token mechanism (yet)
-   - No multi-factor authentication
-   - No role-based access control (yet)
+   - JWT tokens only (no OAuth/SAML by default)
+   - Basic authentication implementation
+   - Extension required for advanced auth patterns
 
-5. **Performance**
-   - No caching layer
-   - No CDN integration
-   - Single-server deployment only
-   - No load balancing support
+5. **Scalability**
+   - Single-server docker-compose setup
+   - No built-in load balancing
+   - Horizontal scaling requires Kubernetes or Swarm
+   - No caching layer by default
 
 ### Business Constraints
 
-1. **Proprietary License**
-   - Cannot be open-sourced without approval
-   - Internal use only
+1. **License**
+   - MIT License (Open Source)
+   - Free to use and modify
+   - See LICENSE file for details
 
 2. **Development Status**
-   - Work-in-progress (WIP)
-   - Not production-ready
-   - Limited documentation
-   - No automated tests
+   - Active maintenance
+   - Reference implementation (not production app)
+   - Documentation-focused
+   - Example/template purpose
 
-3. **Resource Constraints**
-   - Small development team
-   - Limited QA resources
-   - Manual deployment process
+3. **Scope**
+   - Reference implementation, not a complete application
+   - Demonstrates patterns, not full features
+   - Requires customization for production use
 
 ---
 
 ## 13. Technical Debt
 
-### High Priority
+As a reference implementation, this section documents areas for improvement that adopters should consider when building production applications.
 
-1. **Testing**
-   - **Issue:** No unit tests, integration tests, or e2e tests
-   - **Impact:** High risk of regressions, difficult to refactor
-   - **Effort:** 2-3 weeks
-   - **Recommendation:** Implement Jest/Karma tests for frontend, PHPUnit for backend
+### Documentation Improvements
 
-2. **Form Persistence**
-   - **Issue:** Forms only stored in-memory, lost on page refresh
-   - **Impact:** Poor user experience, data loss
-   - **Effort:** 1 week
-   - **Recommendation:** Implement backend API for form CRUD operations
-
-3. **API Documentation**
+1. **API Documentation**
    - **Issue:** No OpenAPI/Swagger documentation
-   - **Impact:** Difficult for frontend developers to consume API
-   - **Effort:** 3-5 days
-   - **Recommendation:** Add Swagger annotations or generate docs from code
+   - **Impact:** Developers need to read code to understand API
+   - **Recommendation:** Add Swagger/OpenAPI spec generation
 
-4. **Error Handling**
-   - **Issue:** Inconsistent error handling across services
-   - **Impact:** Debugging difficulties, poor UX
-   - **Effort:** 1 week
-   - **Recommendation:** Standardize error codes, add global error interceptors
+2. **Code Examples**
+   - **Issue:** Limited code examples for common use cases
+   - **Impact:** Slower adoption and learning curve
+   - **Recommendation:** Add more example implementations
 
-### Medium Priority
+### Testing Infrastructure
 
-5. **Database Migrations**
-   - **Issue:** No migration framework, manual schema changes
-   - **Impact:** Deployment risks, version control issues
-   - **Effort:** 1 week
-   - **Recommendation:** Implement Flyway or custom migration system
+3. **Automated Testing**
+   - **Issue:** No test suite included
+   - **Impact:** Reference implementations should show testing best practices
+   - **Recommendation:** Add example tests (PHPUnit for PHP, Jest for Angular, Mocha for Node.js)
 
-6. **Authentication Enhancements**
-   - **Issue:** No refresh tokens, no RBAC, no MFA
-   - **Impact:** Security risks, limited access control
-   - **Effort:** 2 weeks
-   - **Recommendation:** Add refresh token flow, role-based permissions
+4. **CI/CD Pipeline**
+   - **Issue:** No example CI/CD configuration
+   - **Impact:** Deployers must configure from scratch
+   - **Recommendation:** Add GitHub Actions or GitLab CI examples
 
-7. **Caching Layer**
-   - **Issue:** No caching, repeated database queries
-   - **Impact:** Performance degradation under load
-   - **Effort:** 1 week
-   - **Recommendation:** Implement Redis for session and data caching
+### Production Readiness
 
-8. **Docker Compose**
-   - **Issue:** No docker-compose.yml for multi-service orchestration
-   - **Impact:** Complex local development setup
-   - **Effort:** 2-3 days
-   - **Recommendation:** Create docker-compose with all services
+5. **Monitoring & Observability**
+   - **Issue:** No built-in monitoring or logging aggregation
+   - **Impact:** Difficult to troubleshoot production issues
+   - **Recommendation:** Add example Prometheus/Grafana or ELK stack integration
 
-### Low Priority
+6. **Backup & Recovery**
+   - **Issue:** No documented backup procedures
+   - **Impact:** Data loss risk
+   - **Recommendation:** Document PostgreSQL backup strategies
 
-9. **Code Documentation**
-   - **Issue:** Minimal inline comments and README files
-   - **Impact:** Onboarding difficulties
-   - **Effort:** Ongoing
-   - **Recommendation:** Add JSDoc/PHPDoc comments, improve README
+7. **Performance Optimization**
+   - **Issue:** No caching layer, query optimization examples
+   - **Impact:** May not scale well under load
+   - **Recommendation:** Add Redis example, query optimization patterns
 
-10. **Commented-Out Code**
-    - **Issue:** Large blocks of commented code in `dynamic-form.ts`
-    - **Impact:** Code clutter, maintenance confusion
-    - **Effort:** 1 day
-    - **Recommendation:** Remove dead code, use git history instead
+8. **Security Hardening**
+   - **Issue:** Basic security implementation
+   - **Impact:** Production deployments need additional hardening
+   - **Recommendation:** Document security best practices, rate limiting, etc.
 
-11. **Environment Configuration**
-    - **Issue:** No .env.example file, hardcoded configuration
-    - **Impact:** Difficult to set up new environments
-    - **Effort:** 2-3 days
-    - **Recommendation:** Create .env.example with all required variables
+### Known Limitations
 
-12. **Build Optimization**
-    - **Issue:** No production build optimizations (minification, tree-shaking)
-    - **Impact:** Larger bundle sizes, slower load times
-    - **Effort:** 1 week
-    - **Recommendation:** Configure production builds with AOT, lazy loading
+9. **Horizontal Scaling**
+   - **Issue:** Docker Compose single-server setup
+   - **Impact:** Not suitable for high-availability deployments
+   - **Recommendation:** Provide Kubernetes deployment examples
+
+10. **Database Migrations**
+    - **Issue:** Init scripts run only once on first startup
+    - **Impact:** Schema changes require manual intervention
+    - **Recommendation:** Add migration tool example (Flyway, Liquibase)
 
 ---
 
@@ -695,89 +651,111 @@ The following components could be extracted as shared libraries:
 ```
 sunbird-garden/
 ├── docker/                          # Docker configurations
-│   ├── debian-12v9-slim/
-│   │   └── Dockerfile
-│   └── alpine/
-│       └── Dockerfile
-├── sunbird-api/                     # Backend PHP service
-│   ├── App/
-│   │   ├── Database/
-│   │   │   ├── Functions/          # Auto-generated models
-│   │   │   └── postgresql/
-│   │   │       ├── functions/      # SQL stored procedures
-│   │   │       ├── tables/         # Schema definitions
-│   │   │       └── seeds/          # Seed data
-│   │   ├── Routes/                 # API route handlers
-│   │   ├── config/                 # Configuration files
-│   │   ├── lib/                    # Custom libraries
-│   │   └── models/                 # Domain models
-│   ├── Framework/                  # Custom MVC framework
-│   │   └── cli/                    # CLI tools
-│   ├── public/                     # Web root
-│   │   └── index.php              # Entry point
-│   ├── vendor/                     # Composer dependencies
-│   ├── composer.json
+│   └── postgres/
+│       └── init/                    # PostgreSQL initialization scripts
+├── api/                             # Backend StoneScriptPHP service
+│   ├── Dockerfile
+│   ├── composer.json               # PHP dependencies
+│   ├── src/                        # Application source code
+│   │   ├── routes/                 # API route handlers
+│   │   ├── functions/              # PostgreSQL function wrappers
+│   │   └── config/                 # Configuration files
+│   └── public/                     # Web root
+│       └── index.php               # Entry point
+├── www/                             # Frontend Angular service
+│   ├── Dockerfile
+│   ├── package.json                # npm dependencies
+│   ├── angular.json                # Angular configuration
+│   └── src/
+│       ├── app/
+│       │   ├── components/         # Reusable UI components
+│       │   ├── pages/              # Route components
+│       │   ├── services/           # Business logic services
+│       │   └── app.routes.ts       # Application routes
+│       └── index.html
+├── alert/                           # Alert service (Node.js)
+│   ├── Dockerfile
+│   ├── package.json                # npm dependencies
+│   ├── src/
+│   │   └── server.js               # Express + Socket.IO server
 │   └── README.md
-└── sunbird-frontend/               # Frontend Angular service
-    ├── src/
-    │   ├── app/
-    │   │   ├── components/        # Reusable UI components
-    │   │   ├── pages/             # Route components
-    │   │   │   ├── form-editor/
-    │   │   │   ├── form-preview-page/
-    │   │   │   ├── forms/
-    │   │   │   └── home/
-    │   │   ├── services/          # Business logic services
-    │   │   │   ├── forms.service.ts
-    │   │   │   └── dynamic-form.service.ts
-    │   │   ├── lib/               # Shared models and utilities
-    │   │   │   ├── dynamic-form.ts
-    │   │   │   └── my-form-field-model.ts
-    │   │   ├── app.component.ts
-    │   │   ├── app.config.ts
-    │   │   └── app.routes.ts
-    │   └── index.html
-    ├── package.json
-    └── angular.json
+├── docker-compose.yaml              # Service orchestration
+├── .env.example                     # Environment configuration template
+├── README.md                        # Quick start guide
+├── USAGE.md                         # Detailed usage documentation
+├── DOCKER.md                        # Docker configuration guide
+├── HLD.md                           # This file (architecture document)
+├── CLAUDE.md                        # AI agent reference
+├── project-info.yaml                # Project metadata
+├── LICENSE                          # MIT License
+└── scripts/                         # Build and utility scripts
 ```
 
 ### B. Key Workflows
 
-#### Creating a New API Endpoint
+#### Development Workflow
 
-1. Create PostgreSQL function: `App/Database/postgresql/functions/my_function.pssql`
-2. Generate PHP model: `php Framework/cli/generate-model.php my_function.pssql`
-3. Generate route handler: `php Framework/cli/generate-route.php my-route`
-4. Register route in `App/config/routes.php`
-5. Implement logic in `App/Routes/MyRouteRoute.php`
+1. **Start Services**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   docker compose up -d
+   ```
 
-#### Creating a New Form
+2. **Make Changes**
+   - API: Edit files in `api/` directory
+   - Frontend: Edit files in `www/` directory
+   - Alert: Edit files in `alert/` directory
+   - Changes auto-reload (hot reload enabled)
 
-1. Navigate to Form Editor page
-2. Add fields with desired types
-3. Configure field properties (label, validation, etc.)
-4. Preview form
-5. Save form (currently in-memory only)
-6. Use form key to access in Form Preview page
+3. **View Logs**
+   ```bash
+   docker compose logs -f <service-name>
+   ```
 
-### C. API Endpoints (Expected)
+4. **Rebuild After Dependencies Change**
+   ```bash
+   docker compose up -d --build
+   ```
 
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| POST | `/api/auth/login` | User authentication |
-| POST | `/api/auth/register` | User registration |
-| GET | `/api/forms` | List all forms |
-| POST | `/api/forms` | Create new form |
-| GET | `/api/forms/:id` | Get form by ID |
-| PUT | `/api/forms/:id` | Update form |
-| DELETE | `/api/forms/:id` | Delete form |
-| POST | `/api/forms/:id/submit` | Submit form data |
-| GET | `/api/submissions` | List submissions |
-| GET | `/api/export/excel` | Export data to Excel |
+#### Creating a New API Endpoint (StoneScriptPHP)
+
+1. Create PostgreSQL stored procedure in `docker/postgres/init/`
+2. Use StoneScriptPHP CLI to generate PHP function wrapper
+3. Create route handler in `api/src/routes/`
+4. TypeScript client auto-generated for frontend use
+
+#### Adding Database Changes
+
+1. Create SQL migration file in `docker/postgres/init/`
+2. For existing databases, run migrations manually:
+   ```bash
+   docker compose exec db psql -U sunbird_user -d sunbird_db -f /docker-entrypoint-initdb.d/migration.sql
+   ```
+3. For fresh installations, remove volumes and restart:
+   ```bash
+   docker compose down -v
+   docker compose up -d
+   ```
+
+### C. Common Operations
+
+| Operation | Command |
+|-----------|---------|
+| Start all services | `docker compose up -d` |
+| Stop all services | `docker compose down` |
+| View logs | `docker compose logs -f [service]` |
+| Restart service | `docker compose restart [service]` |
+| Access API container | `docker compose exec api bash` |
+| Access database | `docker compose exec db psql -U sunbird_user -d sunbird_db` |
+| Rebuild services | `docker compose up -d --build` |
+| Reset everything | `docker compose down -v` |
 
 ---
 
-**Document Status:** Draft
-**Next Review Date:** 2025-12-26
-**Maintained By:** Development Team
-**Contact:** pradeepdsmk@gmail.com
+**Document Status:** Active
+**Last Updated:** 2026-01-13
+**Version:** 1.1
+**Maintained By:** ProGalaxy eLabs
+**Website:** https://stonescriptphp.org
+**Repository:** https://github.com/progalaxyelabs/sunbird-garden
