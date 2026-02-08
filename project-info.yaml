@@ -12,7 +12,7 @@ project_code: "SNBD-001"
 name: "sunbird-garden"
 
 # Project type: platform | interconnected | standalone
-type: "interconnected"
+type: "platform"
 
 # Project status: production | active-dev | staging | maintenance | paused | archived | planning | unknown
 status: "maintenance"
@@ -25,7 +25,7 @@ status: "maintenance"
 title: "Sunbird-garden"
 
 # Brief project description
-description: "Reference implementation platform showcasing StoneScriptPHP framework with Angular, Rust API, and Node.js services"
+description: "Reference implementation platform showcasing StoneScriptPHP framework with Angular, PHP API, and Node.js services"
 
 # Project version (semantic versioning recommended)
 version: "1.0.0"
@@ -34,7 +34,7 @@ version: "1.0.0"
 created: "2024-01-01"
 
 # Last modified date (ISO 8601 format: YYYY-MM-DD)
-last_modified: "2025-11-26"
+last_modified: "2025-12-11"
 
 
 # BUSINESS CLASSIFICATION

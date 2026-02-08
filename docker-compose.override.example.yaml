@@ -1,0 +1,53 @@
+# docker-compose.override.example.yaml
+# 
+# This is an example override file for local development customizations.
+# Copy this to docker-compose.override.yml (which is gitignored) and customize:
+#
+#   cp docker-compose.override.example.yaml docker-compose.override.yml
+#
+# Docker Compose automatically merges docker-compose.yaml with docker-compose.override.yml
+
+version: '3.8'
+
+services:
+  # Example: Enable debugging for API
+  api:
+    environment:
+      APP_DEBUG: "true"
+      XDEBUG_MODE: "debug"
+    ports:
+      - "127.0.0.1:9003:9003"  # Xdebug port
+
+  # Example: Use local development server for frontend
+  www:
+    command: npm run dev
+    environment:
+      NODE_ENV: development
+    ports:
+      - "127.0.0.1:4400:4200"  # Angular dev server port
+
+  # Example: Enable nodemon for alert service
+  alert:
+    command: npm run dev
+    volumes:
+      - ./alert:/app
+      - /app/node_modules
+
+  # Example: Expose database port for local tools (careful!)
+  # db:
+  #   ports:
+  #     - "127.0.0.1:5432:5432"
+
+  # Example: Add Redis for caching
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: ${PROJECT_NAME:-sunbird}-redis
+  #   ports:
+  #     - "127.0.0.1:6379:6379"
+  #   networks:
+  #     - internal
+  #   volumes:
+  #     - redis_data:/data
+
+# volumes:
+#   redis_data:
